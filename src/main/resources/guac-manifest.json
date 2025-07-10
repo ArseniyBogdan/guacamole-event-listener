@@ -1,0 +1,8 @@
+{
+  "guacamoleVersion" : "1.6.0",
+  "name"      : "Dummy Listener Extension",
+  "namespace" : "guac-listener-tutorial",
+  "listeners" : [
+    "org.apache.guacamole.event.RemoteEventListener"
+  ]
+}
