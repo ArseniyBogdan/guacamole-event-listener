@@ -24,9 +24,11 @@ public class RemoteEventListener implements Listener {
         try {
             if (event instanceof TunnelConnectEvent) {
                 TunnelConnectEvent connectEvent = (TunnelConnectEvent) event;
+                logger.info("Connect event");
                 sendEvent("connect", connectEvent.getTunnel().getUUID().toString());
             } else if (event instanceof TunnelCloseEvent) {
                 TunnelCloseEvent closeEvent = (TunnelCloseEvent) event;
+                logger.info("Disconnect event");
                 sendEvent("disconnect", closeEvent.getTunnel().getUUID().toString());
             }
         } catch (Exception ex) {
@@ -35,18 +37,23 @@ public class RemoteEventListener implements Listener {
     }
 
     private void sendEvent(String type, String connectionId) throws Exception {
-        URL url = new URI("http://app/api/guac-events").toURL();
+        URL url = new URI("http://app:8080/api/guac-events/").toURL();
         String json = String.format("{\"type\":\"%s\",\"connectionId\":\"%s\"}", type, connectionId);
-
+        logger.info("Prepare connection");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        logger.info("Open connection");
         try {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
+            logger.info("Sending request");
+
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(json.getBytes());
             }
+
+            logger.info("Request sended request");
 
             int responseCode = connection.getResponseCode();
             logger.info("Sent event {} for connection {}, response: {}", type, connectionId, responseCode);
